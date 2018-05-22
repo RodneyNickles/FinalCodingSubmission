@@ -2,6 +2,8 @@ package pkgCore;
 
 import org.apache.poi.ss.formula.functions.FinanceLib;
 
+import javafx.scene.control.TextField;
+
 public class Retirement {
 
 	private int iYearsToWork;
@@ -22,17 +24,21 @@ public class Retirement {
 		this.dMonthlySSI = dMonthlySSI;
 	}
 
+
 	public double MonthlySavings() {
 
 		//TODO: Calculate AmountToSave
-		double pmt = 0; // <-- this should be fixed to calculate the real pmt
+		double pmt = PMT((getdAnnualReturnWorking()/12),(getiYearsToWork()*12),0,TotalAmountToSave(),false);
+		pmt = Math.round(pmt * 100.0) / 100.0;
 		return pmt;
 	}
 
+	
 	public double TotalAmountToSave() {
 		
 		//TODO: Calculate the Total Amount Requried to save
-		double pv = 0;
+		double pv = PV((getdAnnualReturnRetired()/12), (getiYearsRetired()*12), (getdRequiredIncome()-getdMonthlySSI()), 0, false);
+		pv = Math.round(pv * 100.0) / 100.0;
 		//	Hint: Here's how to round a number: pv = Math.round(pv * 100.0) / 100.0;
 		return pv;
 	}
@@ -43,6 +49,7 @@ public class Retirement {
 		//	p = present value
 		//	f = future value
 		//	t = boolean... when interest is calculated... we're going to use FALSE
+		
 		return FinanceLib.pmt(r, n, p, f, t);
 	}
 

@@ -1,6 +1,7 @@
 package pkgApp.controller;
 
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,19 +61,13 @@ public class RetirementController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		// Adding an entry in the hashmap for each TextField control I want to validate
-		// with a regular expression
-		// "\\d*?" - means any decimal number
-		// "\\d*(\\.\\d*)?" means any decimal, then optionally a period (.), then
-		// decmial
-		hmTextFieldRegEx.put(txtYearsToWork, "\\d*?");
-		hmTextFieldRegEx.put(txtAnnualReturnWorking, "\\d*(\\.\\d*)?");
-
-		// Check out these pages (how to validate controls):
-		// https://stackoverflow.com/questions/30935279/javafx-input-validation-textfield
-		// https://stackoverflow.com/questions/40485521/javafx-textfield-validation-decimal-value?rq=1
-		// https://stackoverflow.com/questions/8381374/how-to-implement-a-numberfield-in-javafx-2-0
-		// There are some examples on how to validate / check format
+	
+		hmTextFieldRegEx.put(txtYearsToWork, "(?<!-)\\b([0-9]|[1-3][0-9]|40)\\b\\d*?"); 
+		hmTextFieldRegEx.put(txtAnnualReturnWorking, "(?<!-)\\b([0-9])\\b\\d*(\\.\\d*)?|10"); 
+		hmTextFieldRegEx.put(txtYearsRetired, "(?<!-)\\b([0-9]|1[0-9]|20)\\b\\d*?"); 
+		hmTextFieldRegEx.put(txtAnnualReturnRetired, "(?<!-)\\b([0-9])\\b\\d*(\\.\\d*)?|10");
+		hmTextFieldRegEx.put(txtRequiredIncome, "(?<!-)\\b([3-9][0-9][0-9][0-9]|10000|264[2-9]|26[5-9][0-9]|2[7-9][0-9][0-9])\\b\\d*?");
+		hmTextFieldRegEx.put(txtMonthlySSI, "(?<!-)\\b([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|1[0-9][0-9][0-9]|2[0-5][0-9][0-9]|26[0-3][0-9]|264[12])\\b\\d*?");
 
 		Iterator it = hmTextFieldRegEx.entrySet().iterator();
 		while (it.hasNext()) {
@@ -109,27 +104,53 @@ public class RetirementController implements Initializable {
 		System.out.println("Clear pressed");
 
 		// disable read-only controls
+		txtSaveEachMonth.clear();
 		txtSaveEachMonth.setDisable(true);
+		txtWhatYouNeedToSave.clear();
 		txtWhatYouNeedToSave.setDisable(true);
 
-		// Clear, enable txtYearsToWork
+		// Clear
 		txtYearsToWork.clear();
 		txtYearsToWork.setDisable(false);
+		
+		txtAnnualReturnWorking.clear();
+		txtAnnualReturnWorking.setDisable(false);
+		
+		txtYearsRetired.clear();
+		txtYearsRetired.setDisable(false);
+		
+		txtAnnualReturnRetired.clear();
+		txtAnnualReturnRetired.setDisable(false);
+		
+		txtRequiredIncome.clear();
+		txtRequiredIncome.setDisable(false);
+		
+		txtMonthlySSI.clear();
+		txtMonthlySSI.setDisable(false);
 
-		// TODO: Clear, enable the rest of the input controls. Hint! You already have a
-		// HashMap of all the input controls....!!!!
+		
 	}
 
 	@FXML
 	public void btnCalculate() {
 
 		System.out.println("calculating");
-
+		
+		Retirement r = new Retirement(Integer.parseInt(txtYearsToWork.getText()), Double.parseDouble(txtAnnualReturnWorking.getText()), Integer.parseInt(txtYearsRetired.getText()), Double.parseDouble(txtAnnualReturnRetired.getText()), Double.parseDouble(txtRequiredIncome.getText()), Double.parseDouble(txtMonthlySSI.getText()));
+		
+		double totalSave = -Retirement.PV(((r.getdAnnualReturnRetired()/100)/12), (r.getiYearsRetired()*12), (r.getdRequiredIncome()-r.getdMonthlySSI()), 0, false);
+		double totalSaveRound = Math.round(totalSave*100.0)/100.0;
+		String WhatYouNeedToSave = String.valueOf(totalSaveRound);
+		
+		
+		double monthlySave = -Retirement.PMT(((r.getdAnnualReturnWorking()/100)/12), (r.getiYearsToWork()*12), 0, totalSaveRound, false);
+		double monthlySaveRound = Math.round(monthlySave*100.0)/100.0;
+		String SaveEachMonth = String.valueOf(monthlySaveRound);		
+				
+		
 		txtSaveEachMonth.setDisable(false);
 		txtWhatYouNeedToSave.setDisable(false);
-
-		// TODO: Calculate txtWhatYouNeedToSave value...
-		// TODO: Then calculate txtSaveEachMonth, using amount from txtWhatYouNeedToSave
-		// as input
+		txtWhatYouNeedToSave.setText(WhatYouNeedToSave);
+		txtSaveEachMonth.setText(SaveEachMonth);
 	}
 }

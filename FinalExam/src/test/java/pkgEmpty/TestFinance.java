@@ -19,8 +19,10 @@ public class TestFinance {
 		double dAnnualReturnRetired = 0.02;
 		double dRequiredIncome = 10000;
 		double dMonthlySSI = 2642;
-
+		
 		double PV = Retirement.PV(dAnnualReturnRetired / 12, iYearsRetired * 12, dRequiredIncome - dMonthlySSI, 0, false);
+		
+		double PMT = Retirement.PMT(((dAnnualReturnWorking)/12), (iYearsToWork*12), 0, PV, false);
 		
 		System.out.println(PV);
 		
@@ -33,11 +35,51 @@ public class TestFinance {
 		//	Note the third argument.  That says only compare the double values to the hundredth place.
 		assertEquals(1454485.55,Math.abs(PV),0.01);
 		
+		assertEquals(554.13,Math.abs(PMT),0.01);
 	}
 
 	@Test
-	public void TestPMT() {
-
+	public void TestPMTandPV() {
+		int iYearsToWork = 40;
+		double dAnnualReturnWorking = 0.07;
+		int iYearsRetired = 20;
+		double dAnnualReturnRetired = 0.02;
+		double dRequiredIncome = 5000;
+		double dMonthlySSI = 2642;
+		double PV = Retirement.PV(dAnnualReturnRetired / 12, iYearsRetired * 12, dRequiredIncome - dMonthlySSI, 0, false);
+		double PMT = Retirement.PMT(((dAnnualReturnWorking)/12), (iYearsToWork*12), 0, PV, false);
+		assertEquals(177.58,Math.abs(PMT),0.01);
+		assertEquals(466115.37,Math.abs(PV),0.01);
+		assertEquals(-466115.37,PV,0.01);
+		//TODO: Test PMT.  Make sure PMT works as expected.
+	}
+	@Test
+	public void TestPMTandPV2() {
+		int iYearsToWork = 20;
+		double dAnnualReturnWorking = 0.07;
+		int iYearsRetired = 20;
+		double dAnnualReturnRetired = 0.02;
+		double dRequiredIncome = 5000;
+		double dMonthlySSI = 2642;
+		double PV = Retirement.PV(dAnnualReturnRetired / 12, iYearsRetired * 12, dRequiredIncome - dMonthlySSI, 0, false);
+		double PMT = Retirement.PMT(((dAnnualReturnWorking)/12), (iYearsToWork*12), 0, PV, false);
+		assertEquals(894.78,Math.abs(PMT),0.01);
+		assertEquals(466115.37,Math.abs(PV),0.01);
+		//TODO: Test PMT.  Make sure PMT works as expected.
+	}
+	
+	@Test
+	public void TestPMTandPV3() {
+		int iYearsToWork = 1;
+		double dAnnualReturnWorking = 0.01;
+		int iYearsRetired = 1;
+		double dAnnualReturnRetired = 0.01;
+		double dRequiredIncome = 2642;
+		double dMonthlySSI = 1;
+		double PV = Retirement.PV(dAnnualReturnRetired / 12, iYearsRetired * 12, dRequiredIncome - dMonthlySSI, 0, false);
+		double PMT = Retirement.PMT(((dAnnualReturnWorking)/12), (iYearsToWork*12), 0, PV, false);
+		assertEquals(2614.73,Math.abs(PMT),0.01);
+		assertEquals(31521.00,Math.abs(PV),0.01);
 		//TODO: Test PMT.  Make sure PMT works as expected.
 	}
 }
